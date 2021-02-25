@@ -1,0 +1,33 @@
+//===---------------------------------------------------------------===
+// llvm-link command line tool
+//===---------------------------------------------------------------===
+
+cc_binary {
+    name: "llvm-link",
+    defaults: ["xllvm-defaults"],
+    srcs: ["llvm-link.cpp"],
+    static_libs: [
+        "xlibLLVMipo",
+        "xlibLLVMLinker",
+        "xlibLLVMIRReader",
+        "xlibLLVMObject",
+        "xlibLLVMMC",
+        "xlibLLVMMCParser",
+        "xlibLLVMBitReader",
+        "xlibLLVMBitWriter",
+        "xlibLLVMAsmParser",
+        "xlibLLVMTransformUtils",
+        "xlibLLVMAnalysis",
+        "xlibLLVMTarget",
+        "xlibLLVMCore",
+        "xlibLLVMSupport",
+
+        "xlibLLVMBitstreamReader",
+        "xlibLLVMBinaryFormat",
+        "xlibLLVMProfileData",
+        "xlibLLVMAnalysis",
+        "xlibLLVMRemarks",
+        "xlibLLVMDemangle",
+    ],
+}
+

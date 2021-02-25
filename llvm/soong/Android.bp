@@ -1,0 +1,17 @@
+bootstrap_go_package {
+    name: "soong-llvmx",
+    pkgPath: "android/soong/external/llvmx",
+    deps: [
+        "blueprint",
+        "blueprint-pathtools",
+        "soong",
+        "soong-android",
+        "soong-cc",
+        "soong-genrule",
+    ],
+    srcs: [
+        "llvm.go",
+        // "tblgen.go",
+    ],
+    pluginFor: ["soong_build"],
+}

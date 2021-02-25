@@ -1,0 +1,13 @@
+//===---------------------------------------------------------------===
+// not command line tool
+//===---------------------------------------------------------------===
+
+cc_binary_host {
+    name: "xnot",
+    defaults: ["xllvm-defaults"],
+    srcs: ["not.cpp"],
+    static_libs: [
+        "xlibLLVMCore",
+        "xlibLLVMSupport",
+    ],
+}

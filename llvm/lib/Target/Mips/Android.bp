@@ -1,0 +1,47 @@
+cc_library_static {
+    name: "xlibLLVMMipsCodeGen",
+    defaults: [
+        "xllvm-lib-defaults",
+        "xllvm-mips-defaults",
+    ],
+    srcs: ["*.cpp"],
+}
+
+cc_defaults {
+    name: "xllvm-mips-defaults",
+    //generated_headers: ["xllvm-gen-mips"],
+    static_libs: ["xllvm-mips-headers"],
+}
+
+cc_library_static {
+    name: "xllvm-mips-headers",
+    vendor_available: true,
+    host_supported: true,
+    target: {
+        windows: {
+            enabled: true,
+        },
+    },
+    export_include_dirs: ["."],
+}
+
+// xllvm_tblgen {
+//     name: "xllvm-gen-mips",
+//     in: "Mips.td",
+//     outs: [
+//         "MipsGenRegisterInfo.inc",
+//         "MipsGenInstrInfo.inc",
+//         "MipsGenCodeEmitter.inc",
+//         "MipsGenMCCodeEmitter.inc",
+//         "MipsGenMCPseudoLowering.inc",
+//         "MipsGenAsmWriter.inc",
+//         "MipsGenAsmMatcher.inc",
+//         "MipsGenDAGISel.inc",
+//         "MipsGenFastISel.inc",
+//         "MipsGenCallingConv.inc",
+//         "MipsGenSubtargetInfo.inc",
+//         "MipsGenDisassemblerTables.inc",
+//     ],
+// }
+
+subdirs = ["*"]

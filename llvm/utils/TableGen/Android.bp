@@ -1,0 +1,24 @@
+cc_binary_host {
+    name: "xllvm-tblgen",
+    defaults: ["xllvm-defaults-no-generated-headers"],
+    srcs: ["*.cpp"],
+
+    static_libs: [
+        "xlibLLVMSupport",
+        "xlibLLVMTableGen",
+    ],
+    clang_cflags: [
+        "-Wno-user-defined-warnings",
+    ],
+    target: {
+        windows: {
+            enabled: false,
+        },
+        // llvm-defaults turns off host builds by default, turn it back on for
+        // modules that are used to build llvm-tblgen
+        host: {
+            // no need for tblgen
+            enabled: false,
+        },
+    },
+}

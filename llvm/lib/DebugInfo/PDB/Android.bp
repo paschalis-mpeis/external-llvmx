@@ -1,0 +1,10 @@
+cc_library_static {
+    name: "xlibLLVMDebugInfoPDB",
+    defaults: [
+        "xllvm-lib-defaults",
+    ],
+    srcs: [
+        "*.cpp",
+        "Raw/*.cpp",
+    ],
+}

@@ -1,0 +1,10 @@
+cc_library_static {
+    name: "xlibLLVMObject",
+    defaults: [
+        "xllvm-lib-defaults",
+    ],
+    srcs: ["*.cpp"],
+    cflags: [
+        "-Wno-unused-private-field",
+    ],
+}

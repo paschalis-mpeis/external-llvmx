@@ -1,0 +1,7 @@
+cc_library_static {
+    name: "xlibLLVMInterpreter",
+    defaults: [
+        "xllvm-lib-defaults",
+    ],
+    srcs: ["*.cpp"],
+}

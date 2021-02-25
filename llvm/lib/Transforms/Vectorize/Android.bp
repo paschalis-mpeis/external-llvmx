@@ -1,0 +1,10 @@
+cc_library_static {
+    name: "xlibLLVMVectorize",
+    defaults: [
+        "xllvm-lib-defaults",
+    ],
+    srcs: ["*.cpp"],
+    clang_cflags: [
+        "-Wno-user-defined-warnings",
+    ],
+}

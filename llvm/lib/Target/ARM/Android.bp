@@ -1,0 +1,53 @@
+cc_library_static {
+    name: "xlibLLVMARMCodeGen",
+    defaults: [
+        "xllvm-lib-defaults",
+        "xllvm-arm-defaults",
+    ],
+    srcs: ["*.cpp"],
+
+    // b/31559947, b/31938382 clang-tidy segmentation fault.
+    tidy_checks: [
+        "-clang-analyzer-*",
+        "-readability-*",
+    ],
+}
+
+cc_defaults {
+    name: "xllvm-arm-defaults",
+    // generated_headers: ["xllvm-gen-arm"],
+    static_libs: ["xllvm-arm-headers"],
+}
+
+cc_library_static {
+    name: "xllvm-arm-headers",
+    vendor_available: true,
+    host_supported: true,
+    target: {
+        windows: {
+            enabled: true,
+        },
+    },
+    export_include_dirs: ["."],
+}
+
+// xllvm_tblgen {
+//     name: "xllvm-gen-arm",
+//     in: "ARM.td",
+//     outs: [
+//         "ARMGenRegisterInfo.inc",
+//         "ARMGenInstrInfo.inc",
+//         "ARMGenCodeEmitter.inc",
+//         "ARMGenMCCodeEmitter.inc",
+//         "ARMGenMCPseudoLowering.inc",
+//         "ARMGenAsmWriter.inc",
+//         "ARMGenAsmMatcher.inc",
+//         "ARMGenDAGISel.inc",
+//         "ARMGenFastISel.inc",
+//         "ARMGenCallingConv.inc",
+//         "ARMGenSubtargetInfo.inc",
+//         "ARMGenDisassemblerTables.inc",
+//     ],
+// }
+
+subdirs = ["*"]

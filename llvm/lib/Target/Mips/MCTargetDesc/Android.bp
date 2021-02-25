@@ -1,0 +1,8 @@
+cc_library_static {
+    name: "xlibLLVMMipsDesc",
+    defaults: [
+        "xllvm-lib-defaults",
+        "xllvm-mips-defaults",
+    ],
+    srcs: ["*.cpp"],
+}

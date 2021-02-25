@@ -1,0 +1,376 @@
+cc_defaults {
+    name: "xllvm-defaults",
+    defaults: ["xllvm-defaults-no-generated-headers"],
+    header_libs: ["xllvm-headers"],
+    tidy_checks: [
+        "-google-build-*",
+        "-google-global-*",
+    ], 
+    sanitize: {
+        hwaddress: false, // code size b/112437884
+    },     
+}
+
+// This module defines all of the defaults used to compiled llvm, except for
+// the generated headers.  It is necessary to avoid a circular dependency
+// from the tblgen tool used to generate the headers to the generated headers.
+xllvm_defaults {
+    name: "xllvm-defaults-no-generated-headers",
+
+    host_supported: true,
+
+    cflags: [
+        "-D_GNU_SOURCE",
+        "-D__STDC_LIMIT_MACROS",
+        "-D__STDC_CONSTANT_MACROS",
+        "-D__STDC_FORMAT_MACROS",
+        "-fomit-frame-pointer",
+        "-Wall",
+        "-W",
+        "-Wno-sign-promo",
+        "-Wno-unused-variable",
+        "-Wno-cast-qual",
+        "-Wno-sign-compare",
+        "-Wno-unused-parameter",
+        "-Wno-maybe-uninitialized",
+        "-Wno-missing-field-initializers",
+        "-Wno-implicit-fallthrough",
+        "-Wwrite-strings",
+        "-Dsprintf=sprintf",
+        "-ferror-limit=0",
+        // execinfo.h ?
+        // "-funwind-tables"
+        // this was useful when compilation had like a thousand errors
+        // "-error-limit=0",
+    ],
+
+    cppflags: [
+        "-Wno-sign-promo",
+        "-Wno-unused-variable",
+        "-Wno-cast-qual",
+        "-Wno-sign-compare",
+        "-Wno-unused-parameter",
+        "-Wno-maybe-uninitialized",
+        "-Wno-missing-field-initializers",
+        "-Wno-implicit-fallthrough",
+        "-Wwrite-strings",
+        // INFO LLVM10 no longer depends on c++11
+        // "-std=c++11",
+    ],
+
+    tidy_checks: [
+        "-google-build-*",
+        "-google-global-*",
+    ],
+
+    header_libs: ["xllvm-headers-no-generated-headers"],
+    include_dirs: [
+        "external/zlib",
+    ],
+    target: {
+        android: {
+            cflags: [
+                "-finline-functions",
+            ],
+        static_libs: [
+                "libz",
+            ],
+        },
+        linux: {
+            cppflags: [
+                "-Woverloaded-virtual",
+            ],
+        },
+        host: {
+            cppflags: [
+                "-fno-rtti",
+                "-fno-exceptions",
+            ],
+            shared_libs: [
+                "libz",
+            ],
+        },
+        windows: {
+            // Disable certain warnings for use with mingw.
+            // We also must undefine WIN32_LEAN_AND_MEAN, since it is being passed globally
+            // on the command line, and LLVM defines this internally itself.
+            cflags: [
+                "-Wno-array-bounds",
+                "-Wno-comment",
+                "-UWIN32_LEAN_AND_MEAN",
+            ],
+
+            host_ldlibs: ["-luuid"],
+        },
+        linux_glibc: {
+            // Add on ncurses to have support for terminfo
+            host_ldlibs: [
+                "-lncurses",
+                "-lgcc_s",
+            ],
+        },
+        darwin: {
+            cppflags: [
+                "-Wno-deprecated-declarations",
+                "-Woverloaded-virtual",
+                "-mmacosx-version-min=10.12",
+            ],
+
+            // Add on ncurses to have support for terminfo
+            host_ldlibs: [
+                "-lncurses",
+            ],
+        },
+    },
+}
+
+cc_library_headers {
+    name: "xllvm-headers-no-generated-headers",
+    vendor_available: true,
+    host_supported: true,
+    export_include_dirs: [
+        "include",
+        "lib/Target",
+        "lib/Target/ARM",
+        "lib/Target/AArch64",
+    ], 
+    target: {
+        android_arm: {
+            export_include_dirs: [
+                "include/device/arm",
+            ],
+        },
+        android_arm64: {
+            export_include_dirs: [
+                "include/device/arm64",
+            ],
+        },
+        linux_glibc: {
+            export_include_dirs: [
+                "include/host/linux_x86_64",
+            ],
+        },
+        darwin: {
+            export_include_dirs: [
+                // maybe unnecessary since tblgen is compiled externally
+                "include/host/darwin_x86_64",
+            ],
+        },
+        linux_bionic: {
+            enabled: true,
+        },
+        windows: {
+            enabled: true,
+        },
+    }, 
+}
+
+cc_library_headers {
+    name: "xllvm-headers",
+    vendor_available: true,
+    host_supported: true,
+    header_libs: ["xllvm-headers-no-generated-headers"],
+    export_header_lib_headers: ["xllvm-headers-no-generated-headers"],
+    // it might be better to generate the tblgen headers here, like external/llvm
+    // (not built them externally and include them from this file)
+    // the proper way would be to implement these targets (in go lang)
+    // generated_headers: [
+    //     "xllvm-gen-attributes",
+    //     "xllvm-gen-intrinsic-impl",
+    //     "xllvm-gen-intrinsic-enum",
+    // ],
+    // export_generated_headers: [
+    //     "xllvm-gen-attributes",
+    //     "xllvm-gen-intrinsic-impl",
+    //     "xllvm-gen-intrinsic-enum",
+    // ],
+    export_include_dirs: [
+        // Externally generated headers
+        "include/common/",
+        "include/tblgen/",
+        "include/tblgen/IR",
+        "include/tblgen/ToolDrivers/llvm-lib",
+        "include/tblgen/ToolDrivers/llvm-dlltool",
+        "include/tblgen/Transforms/InstCombine",
+        "include/tblgen/Target/ARM",
+        "include/tblgen/Target/AArch64",
+    ],
+    target: {
+        windows: {
+            enabled: true,
+        },
+    }, 
+}
+
+// Unimplemented targets for generated the required headers locally
+// (fully integrated into soong)
+// xllvm_tblgen {
+//     name: "xllvm-gen-attributes",
+//     in: "include/llvm/IR/Attributes.td",
+//     outs: ["llvm/IR/Attributes.inc"],
+// }
+//
+// xllvm_tblgen {
+//     name: "xllvm-gen-intrinsic-impl",
+//     in: "include/llvm/IR/Intrinsics.td",
+//     outs: ["llvm/IR/IntrinsicImpl.inc"],
+// }
+//
+// xllvm_tblgen {
+//     name: "xllvm-gen-intrinsic-enum",
+//     in: "include/llvm/IR/Intrinsics.td",
+//     outs: ["llvm/IR/IntrinsicEnums.inc"],
+// }
+//
+// xllvm_tblgen {
+//     name: "xllvm-gen-searchable-tables",
+//     in: "include/llvm/IR/Intrinsics.td",
+//     outs: ["llvm/IR/IntrinsicEnums.inc"],
+// }
+
+force_build_llvm_components_defaults {
+    name: "xforce_build_llvm_components",
+    // Host build disabled by soong/llvm.go unless FORCE_BUILD_LLVMX_COMPONENTS
+    // environment variable is set
+}
+
+// LLVM shared library build
+llvm_arm_static_libraries = [
+    "xlibLLVMARMCodeGen",
+    "xlibLLVMARMAsmParser",
+    // "xlibLLVMARMAsmPrinter",
+    "xlibLLVMARMInfo",
+    "xlibLLVMARMDesc",
+    "xlibLLVMARMDisassembler",
+]
+
+llvm_aarch64_static_libraries = [
+    "xlibLLVMAArch64CodeGen",
+    "xlibLLVMAArch64Info",
+    "xlibLLVMAArch64Desc",
+    // "xlibLLVMAArch64AsmPrinter",
+    "xlibLLVMAArch64AsmParser",
+    "xlibLLVMAArch64Disassembler",
+]
+
+llvm_x86_static_libraries = [
+    "xlibLLVMX86CodeGen",
+    "xlibLLVMX86Info",
+    "xlibLLVMX86Desc",
+    "xlibLLVMX86AsmParser",
+    // "xlibLLVMX86AsmPrinter",
+    "xlibLLVMX86Utils",
+    "xlibLLVMX86Disassembler",
+]
+
+llvm_mips_static_libraries = [
+    "xlibLLVMMipsCodeGen",
+    "xlibLLVMMipsInfo",
+    "xlibLLVMMipsDesc",
+    "xlibLLVMMipsAsmParser",
+    // "xlibLLVMMipsAsmPrinter",
+    "xlibLLVMMipsDisassembler",
+]
+
+cc_library {
+    host_supported: false,
+    name: "libLLVM",
+    vendor_available: true,
+    strip: {
+        keep_symbols: true,
+    },
+    defaults: [
+        "xllvm-defaults",
+        // might have to enable hosts?
+        "xforce_build_llvm_components",
+    ],
+
+    whole_static_libs: [
+        // pre static libraries
+        "xlibLLVMSupportUnix",
+        "xlibLLVMLinker",
+        "xlibLLVMipo",
+        "xlibLLVMcfguard",
+        "xlibLLVMMachO",
+        "xlibLLVMocr",
+        "xlibLLVMDebugInfoDWARF",
+        "xlibLLVMDebugInfoPDB",
+        "xlibLLVMSymbolize",
+        "xlibLLVMIRReader",
+        "xlibLLVMBitWriter",
+        "xlibLLVMBitReader",
+        // new additions
+        // (analysis before passes)
+        "xlibLLVMAnalysis",
+        "xlibLLVMPasses",
+
+        // post static libraries
+        "xlibLLVMLTO",
+        "xlibLLVMAsmPrinter",
+        "xlibLLVMSelectionDAG",
+        "xlibLLVMCodeGen",
+        "xlibLLVMDebugInfoCodeView",
+        "xlibLLVMObject",
+        "xlibLLVMScalarOpts",
+        "xlibLLVMInstCombine",
+        "xlibLLVMInstrumentation",
+        "xlibLLVMTransformObjCARC",
+        "xlibLLVMTransformUtils",
+        "xlibLLVMTarget",
+        "xlibLLVMGlobalISel",
+        "xlibLLVMMCDisassembler",
+        "xlibLLVMMC",
+        "xlibLLVMMCParser",
+        "xlibLLVMCore",
+        "xlibLLVMAsmParser",
+        "xlibLLVMOption",
+        "xlibLLVMSupport",
+        "xlibLLVMVectorize",
+        "xlibLLVMProfileData",
+        "xlibLLVMProfileDataCoverage",
+        "xlibLLVMLibDriver",
+        "xlibLLVMExecutionEngine",
+        "xlibLLVMRuntimeDyld",
+        "xlibLLVMMCJIT",
+        "xlibLLVMOrcJIT",
+
+        // extra dependencies:
+        "xlibLLVMARMUtils",
+        "xlibLLVMAArch64Utils",
+        "xlibLLVMBitstreamReader",
+        "xlibLLVMBinaryFormat",
+        "xlibLLVMTransformAggressiveInstCombine",
+        "xlibLLVMDebugInfoPDBNative",
+        "xlibLLVMDemangle",
+        "xlibLLVMRemarks",
+        "xlibLLVMExecutionEngineRuntimeDyldTargets",
+        "xlibLLVMExecutionEngineJITLink",
+        "xlibLLVMDebugInfoMSF",
+    ],
+    // export_include_dirs: [
+    //     tblgen_externally_generated_headers
+    // ],
+    // header_libs: [
+    //     "llvmx-externally-generated-tblgen-headers"
+    // ],
+    target: {
+        android_arm: {
+            // we will be using the 32 bit binaries mostly,
+            // to work w/ dex2oat (which is 32 bits),
+            // so keep aarch64 symbols too
+            whole_static_libs: llvm_aarch64_static_libraries +
+                llvm_arm_static_libraries,
+        },
+        android_arm64: {
+            whole_static_libs: llvm_aarch64_static_libraries +
+                llvm_arm_static_libraries,
+        },
+    },
+}
+
+subdirs = [
+    "soong",
+    "lib",
+    "tools/*",
+    "utils/*",
+]

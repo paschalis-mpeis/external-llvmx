@@ -1,0 +1,100 @@
+//===---------------------------------------------------------------===
+// llc command line tool (common)
+//===---------------------------------------------------------------===
+
+llvm_llc_mips_STATIC_LIBRARIES = [
+    "xlibLLVMMipsAsmParser",
+    "xlibLLVMMipsInfo",
+    "xlibLLVMMipsCodeGen",
+    "xlibLLVMMipsDesc",
+]
+
+llvm_llc_x86_STATIC_LIBRARIES = [
+    "xlibLLVMX86Info",
+    "xlibLLVMX86AsmParser",
+    "xlibLLVMX86CodeGen",
+    "xlibLLVMX86Disassembler",
+    "xlibLLVMX86Desc",
+    "xlibLLVMX86Utils",
+]
+
+llvm_llc_arm_STATIC_LIBRARIES = [
+    "xlibLLVMARMCodeGen",
+    "xlibLLVMARMDisassembler",
+    "xlibLLVMARMAsmParser",
+    "xlibLLVMARMDesc",
+    "xlibLLVMARMInfo",
+]
+
+llvm_llc_aarch64_STATIC_LIBRARIES = [
+    "xlibLLVMAArch64Info",
+    "xlibLLVMAArch64AsmParser",
+    "xlibLLVMAArch64CodeGen",
+    "xlibLLVMAArch64Disassembler",
+    "xlibLLVMAArch64Desc",
+    "xlibLLVMAArch64Utils",
+]
+
+//===---------------------------------------------------------------===
+// llc command line tool (target)
+//===---------------------------------------------------------------===
+
+cc_binary {
+    name: "llc",
+    defaults: ["xllvm-defaults"],
+    srcs: ["llc.cpp"],
+    cppflags: [
+        "-DLLVM_LINK_LLVM_DYLIB",
+    ],
+    static_libs: [
+        "xlibLLVMcfguard",
+        "xlibLLVMMachO",
+        "xlibLLVMocr",
+        "xlibLLVMGlobalISel",
+        "xlibLLVMAsmPrinter",
+        "xlibLLVMDebugInfoCodeView",
+        "xlibLLVMIRReader",
+        "xlibLLVMAsmParser",
+        "xlibLLVMBitReader",
+        "xlibLLVMBitWriter",
+        "xlibLLVMSelectionDAG",
+        "xlibLLVMInstCombine",
+        "xlibLLVMCodeGen",
+        "xlibLLVMProfileData",
+        "xlibLLVMInstrumentation",
+        "xlibLLVMObject",
+        "xlibLLVMipo",
+        "xlibLLVMLinker",
+        "xlibLLVMMCDisassembler",
+        "xlibLLVMMC",
+        "xlibLLVMMIRParser",
+        "xlibLLVMMCParser",
+        "xlibLLVMScalarOpts",
+        "xlibLLVMTransformUtils",
+        "xlibLLVMVectorize",
+        "xlibLLVMAnalysis",
+        "xlibLLVMTarget",
+        "xlibLLVMCore",
+        "xlibLLVMSupport",
+        "xlibLLVMObject",
+
+        "xlibLLVMBitstreamReader",
+        "xlibLLVMARMUtils",
+        "xlibLLVMBinaryFormat",
+        "xlibLLVMRemarks",
+        "xlibLLVMDebugInfoDWARF",
+        "xlibLLVMDemangle",
+    ],
+    target: {
+        host: {
+            static_libs: llvm_llc_arm_STATIC_LIBRARIES +
+                llvm_llc_aarch64_STATIC_LIBRARIES,
+        },
+        android_arm: {
+            static_libs: llvm_llc_arm_STATIC_LIBRARIES,
+        },
+        android_arm64: {
+            static_libs: llvm_llc_aarch64_STATIC_LIBRARIES + llvm_llc_arm_STATIC_LIBRARIES,
+        },
+    },
+}

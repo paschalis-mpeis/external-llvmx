@@ -1,0 +1,10 @@
+cc_binary_host {
+    name: "xFileCheck",
+    defaults: ["xllvm-defaults"],
+    srcs: ["FileCheck.cpp"],
+    static_libs: ["xlibLLVMSupport"],
+    cflags: [
+        "-D__STDC_LIMIT_MACROS",
+        "-D__STDC_CONSTANT_MACROS",
+    ],
+}

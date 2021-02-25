@@ -1,0 +1,8 @@
+cc_library_static {
+    name: "xlibLLVMX86Utils",
+    defaults: [
+        "xllvm-lib-defaults",
+        "xllvm-x86-defaults",
+    ],
+    srcs: ["*.cpp"],
+}

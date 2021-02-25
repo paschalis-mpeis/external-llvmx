@@ -1,0 +1,13 @@
+cc_library_host_shared {
+    name: "xLLVMHello",
+    defaults: [
+        "xllvm-lib-defaults",
+    ],
+    srcs: ["*.cpp"],
+    allow_undefined_symbols: true,
+    target: {
+        windows: {
+            enabled: false,
+        },
+    },
+}

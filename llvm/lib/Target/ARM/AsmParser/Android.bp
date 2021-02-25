@@ -1,0 +1,8 @@
+cc_library_static {
+    name: "xlibLLVMARMAsmParser",
+    defaults: [
+        "xllvm-lib-defaults",
+        "xllvm-arm-defaults",
+    ],
+    srcs: ["*.cpp"],
+}

@@ -1,0 +1,15 @@
+cc_library_static {
+    name: "xlibLLVMLibDriver",
+    defaults: [
+        "xllvm-lib-defaults",
+    ],
+    // generated_headers: ["xllvm-gen-libdriver"],
+    srcs: ["*.cpp"],
+}
+
+// Generated externally
+// llvm_tblgen {
+//     name: "xllvm-gen-libdriver",
+//     in: "Options.td",
+//     outs: ["Options.inc"],
+// }

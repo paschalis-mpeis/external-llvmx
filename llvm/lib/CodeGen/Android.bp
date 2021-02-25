@@ -1,0 +1,9 @@
+cc_library_static {
+    name: "xlibLLVMCodeGen",
+    defaults: [
+        "xllvm-lib-defaults",
+    ],
+    srcs: ["*.cpp"],
+}
+
+subdirs = ["*"]
