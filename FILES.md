@@ -1,18 +1,27 @@
 README.md
 
 ## Reserving X19/x20
+```
 llvm/lib/Target/AArch64/AArch64Subtarget.cpp
+```
 ## Reserving R9
+```
 llvm/lib/Target/ARM/ARMSubtarget.h
+```
 
 ## post-loop optimization
+```
 llvm/lib/Transforms/Utils/LoopUnroll.cpp
+```
 
 # SOONG Blueprint files added (build system):
 
 ## Blueprint of the whole external/llvmx module:
+```
 llvm/Android.bp
+```
 ## Remaining blueprints:
+```
 llvm/lib/Analysis/Android.bp
 llvm/lib/Android.bp
 llvm/lib/AsmParser/Android.bp
@@ -106,22 +115,28 @@ llvm/utils/TableGen/Android.bp
 llvm/utils/count/Android.bp
 llvm/utils/not/Android.bp
 llvm/utils/yaml-bench/Android.bp
+```
 
 # Some generated headers (tblgen) were implemented in go files
 ### This was the recommended for SOONG. It was too much of work,
 ### and since these files could have been generated from an external build,
 #### some scripts were used. In any case, all these intermediate files are in the 
 #### version control.
+```
 llvm/soong/llvm.go
 llvm/soong/tblgen.go
+```
 
 #### some of the helper scripts that were used to externally generate and import tblgens and other .inc files
+```
 llvm/copy.sh
 llvm/tblgen.sh
 llvm/pull_includes.sh
 llvm/pull_tblgen.sh
+```
 
 ## Externally generated headers
+```
 llvm/include/
 llvm/include/common/*
 llvm/include/device/
@@ -131,3 +146,4 @@ llvm/include/host/darwin_x86_64/
 llvm/include/host/linux_x86_64/
 llvm/include/tblgen/
 llvm/lib/Support/Unix/ThreadLocal.inc
+```
